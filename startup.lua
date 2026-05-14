@@ -1,43 +1,37 @@
--- =========================================
--- REACTOR MAIN DATA SERVER
--- MEKANISM FISSION REACTOR
--- =========================================
+-- =====================================
+-- SKALA REACTOR MONITOR
+-- =====================================
 
 term.clear()
 term.setCursorPos(1,1)
 
-print("SKALA REACTOR NODE")
 print("INITIALIZING...")
 
 -- =====================
--- MODEM AUTO DETECTION
+-- REACTOR
 -- =====================
 
-local modem = peripheral.find("modem")
-
-if not modem then
-    error("NO MODEM FOUND")
-end
-
-local modemSide = peripheral.getName(modem)
-
-rednet.open(modemSide)
-
-print("MODEM ONLINE: "..modemSide)
-
--- =====================
--- REACTOR ADAPTER
--- =====================
-
-local reactor = peripheral.wrap("fissionReactorLogicAdapter_1")
+local reactor = peripheral.wrap("fissionReactorLogicAdapter_0")
 
 if not reactor then
-    error("REACTOR ADAPTER NOT FOUND")
+    error("REACTOR NOT FOUND")
 end
 
-print("REACTOR LINK ONLINE")
+-- =====================
+-- MONITOR
+-- =====================
 
-sleep(2)
+local monitor = peripheral.wrap("monitor_1")
+
+if not monitor then
+    error("MONITOR NOT FOUND")
+end
+
+monitor.setTextScale(1)
+
+print("SYSTEM ONLINE")
+
+sleep(1)
 
 -- =====================
 -- MAIN LOOP
@@ -45,9 +39,7 @@ sleep(2)
 
 while true do
 
-    -- ===== READ VALUES =====
-
-    local status = "ONLINE"
+    -- ===== VALUES =====
 
     local temp = math.floor(
         reactor.getTemperature()
@@ -63,7 +55,7 @@ while true do
 
     local burn = reactor.getBurnRate()
 
-    -- ===== SAFETY =====
+    local status = "ONLINE"
 
     if damage > 0 then
         status = "WARNING"
@@ -73,46 +65,27 @@ while true do
         status = "CRITICAL"
     end
 
-    -- ===== SEND DATA =====
+    -- ===== MONITOR =====
 
-    rednet.broadcast({
-        type = "reactor",
+    monitor.clear()
 
-        status = status,
+    monitor.setCursorPos(1,1)
+    monitor.write("=== REACTOR ===")
 
-        temp = temp,
+    monitor.setCursorPos(1,3)
+    monitor.write("STATUS: "..status)
 
-        coolant = coolant,
+    monitor.setCursorPos(1,5)
+    monitor.write("TEMP: "..temp.." C")
 
-        damage = damage,
+    monitor.setCursorPos(1,7)
+    monitor.write("COOLANT: "..coolant.."%")
 
-        burn = burn
-    })
+    monitor.setCursorPos(1,9)
+    monitor.write("DAMAGE: "..damage.."%")
 
-    -- ===== LOCAL STATUS =====
-
-    term.clear()
-
-    term.setCursorPos(1,1)
-    print("SKALA REACTOR NODE")
-
-    term.setCursorPos(1,3)
-    print("STATUS: "..status)
-
-    term.setCursorPos(1,5)
-    print("TEMP: "..temp.." C")
-
-    term.setCursorPos(1,6)
-    print("COOLANT: "..coolant.."%")
-
-    term.setCursorPos(1,7)
-    print("DAMAGE: "..damage.."%")
-
-    term.setCursorPos(1,8)
-    print("BURN: "..burn)
-
-    term.setCursorPos(1,10)
-    print("DATA BROADCAST ACTIVE")
+    monitor.setCursorPos(1,11)
+    monitor.write("BURN: "..burn)
 
     sleep(1)
 
