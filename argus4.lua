@@ -174,7 +174,6 @@ end
 -- These are external in-game alarm systems.
 -- ARGUS only provides persistent redstone signals.
 -- No ComputerCraft speaker system is used.
-end
 
 -- =====================================
 -- BLINK PATTERNS
@@ -513,21 +512,13 @@ while true do
     -- GLOBAL STATE RELAYS
     -- =====================================
 
-    setRelay(relayInfo,
-        activePriority == "INFO"
-    )
+    setRelay(relayInfo, activePriority == "INFO")
 
-    setRelay(relayWarning,
-        activePriority == "WARNING"
-    )
+    setRelay(relayWarning, activePriority == "WARNING")
 
-    setRelay(relayFail,
-        activePriority == "FAIL"
-    )
+    setRelay(relayFail, activePriority == "FAIL")
 
-    setRelay(relayAlarm,
-        activePriority == "ALARM"
-    )
+    setRelay(relayAlarm, activePriority == "ALARM")
 
     -- =====================================
     -- EXTERNAL ALARM ROUTING
