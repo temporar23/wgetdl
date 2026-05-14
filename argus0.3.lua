@@ -13,7 +13,7 @@ print("========================")
 -- PERIPHERALS
 -- =====================================
 
-local reactor = peripheral.wrap("fissionReactorLogicAdapter_0")
+local reactor = peripheral.wrap("fissionReactorLogicAdapter_1")
 local turbine = peripheral.wrap("turbineValve_1")
 local battery = peripheral.wrap("advancedEnergyCube_0")
 
