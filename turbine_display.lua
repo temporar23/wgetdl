@@ -29,21 +29,6 @@ end
 
 monitor.setTextScale(1)
 
--- =====================
--- RELAYS
--- =====================
-
-local relayOff = peripheral.wrap("redstone_relay_2")
-local relayOn  = peripheral.wrap("redstone_relay_3")
-
-if not relayOff then
-    error("RELAY 2 NOT FOUND")
-end
-
-if not relayOn then
-    error("RELAY 3 NOT FOUND")
-end
-
 print("SYSTEM ONLINE")
 
 sleep(1)
@@ -86,26 +71,6 @@ while true do
 
     if steam <= 10 then
         status = "LOW STEAM"
-    end
-
-    -- =====================
-    -- RELAY CONTROL
-    -- =====================
-
-    if production > 0 then
-
-        -- TURBINE ONLINE
-
-        relayOff.setOutput("front", false)
-        relayOn.setOutput("front", true)
-
-    else
-
-        -- TURBINE OFFLINE
-
-        relayOff.setOutput("front", true)
-        relayOn.setOutput("front", false)
-
     end
 
     -- =====================
