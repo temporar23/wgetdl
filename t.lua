@@ -1,19 +1,4 @@
--- =====================================
--- RELAY NETWORK ACTIVITY SIMULATOR
--- Für CC:Tweaked Redstone Relays
--- =====================================
-
-math.randomseed(os.time())
-
--- Alle Relays finden
-local relays = { peripheral.find("redstone_relay") }
-
-if #relays == 0 then
-    error("Keine redstone_relays gefunden!")
-end
-
-print(#relays .. " RELAYS ONLINE")
-sleep(1)
+local relay = peripheral.find("redstone_relay")
 
 local sides = {
     "top",
@@ -24,45 +9,12 @@ local sides = {
     "back"
 }
 
-while true do
+for _, side in ipairs(sides) do
+    print("Teste: " .. side)
 
-    -- Wieviele Relays gleichzeitig aktiv sein dürfen
-    local maxActive = math.random(3, 8)
+    relay.setOutput(side, true)
 
-    -- Aktive Relays speichern
-    local active = {}
+    sleep(2)
 
-    -- Zufällige Relays aktivieren
-    for i = 1, maxActive do
-
-        local relay = relays[math.random(#relays)]
-        local side = sides[math.random(#sides)]
-
-        relay.setOutput(side, true)
-
-        table.insert(active, {
-            relay = relay,
-            side = side
-        })
-
-        print("ACTIVE -> Relay " .. i .. " / " .. side)
-
-        sleep(math.random() * 0.2)
-    end
-
-    -- Laufzeit simulieren
-    sleep(math.random(1, 4))
-
-    -- Wieder ausschalten
-    for _, entry in ipairs(active) do
-
-        entry.relay.setOutput(entry.side, false)
-
-        print("OFFLINE -> " .. entry.side)
-
-        sleep(math.random() * 0.15)
-    end
-
-    -- Kleine Leerlaufphase
-    sleep(math.random() * 2)
+    relay.setOutput(side, false)
 end
