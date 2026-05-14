@@ -513,23 +513,19 @@ while true do
     -- GLOBAL STATE RELAYS
     -- =====================================
 
-    setRelay(relayInfo, 
-        "front",
+    setRelay(relayInfo,
         activePriority == "INFO"
     )
 
-    setRelay(relayWarning, 
-        "front",
+    setRelay(relayWarning,
         activePriority == "WARNING"
     )
 
-    setRelay(relayFail, 
-        "front",
+    setRelay(relayFail,
         activePriority == "FAIL"
     )
 
-    setRelay(relayAlarm, 
-        "front",
+    setRelay(relayAlarm,
         activePriority == "ALARM"
     )
 
