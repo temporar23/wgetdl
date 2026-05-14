@@ -1,136 +1,73 @@
-
 -- =====================================
--- SKALA REACTOR MONITOR
+-- SKALA PROCESS SUPERVISOR
 -- =====================================
 
 term.clear()
 term.setCursorPos(1,1)
 
-print("INITIALIZING...")
+print("SKALA SUPERVISOR")
+print("BOOTING SYSTEMS...")
+sleep(2)
 
--- =====================
--- REACTOR
--- =====================
+-- =====================================
+-- PROGRAM LIST
+-- =====================================
 
-local reactor = peripheral.wrap("fissionReactorLogicAdapter_0")
+local programs = {
+    "reactor_display.lua",
+    "turbine_display.lua",
+    "energy_storage_display.lua",
+    "argus.lua"
+}
 
-if not reactor then
-    error("REACTOR NOT FOUND")
-end
+-- =====================================
+-- RUNNER
+-- =====================================
 
--- =====================
--- MONITOR
--- =====================
+local function supervise(program)
 
-local monitor = peripheral.wrap("monitor_1")
+    while true do
 
-if not monitor then
-    error("MONITOR NOT FOUND")
-end
+        term.setCursorPos(1,5)
+        print("STARTING: "..program.."      ")
 
-monitor.setTextScale(1)
+        local ok, err = pcall(function()
 
--- =====================
--- RELAYS
--- =====================
+            shell.run(program)
 
-local relayOff = peripheral.wrap("redstone_relay_0")
-local relayOn  = peripheral.wrap("redstone_relay_1")
+        end)
 
-if not relayOff then
-    error("RELAY 0 NOT FOUND")
-end
+        term.setCursorPos(1,7)
 
-if not relayOn then
-    error("RELAY 1 NOT FOUND")
-end
+        if ok then
+            print(program.." CLOSED         ")
+        else
+            print(program.." CRASHED        ")
+            print(err.."                    ")
+        end
 
-print("SYSTEM ONLINE")
+        sleep(2)
 
-sleep(1)
+        term.setCursorPos(1,9)
+        print("RESTARTING "..program.."      ")
 
--- =====================
--- MAIN LOOP
--- =====================
-
-while true do
-
-    -- ===== VALUES =====
-
-    local temp = math.floor(
-        reactor.getTemperature()
-    )
-
-    local coolant = math.floor(
-        reactor.getCoolantFilledPercentage() * 100
-    )
-
-    local damage = math.floor(
-        reactor.getDamagePercent()
-    )
-
-    local burn = reactor.getBurnRate()
-
-    local active = reactor.getStatus()
-
-    local status = "OFFLINE"
-
-    if active then
-        status = "ONLINE"
-    end
-
-    if damage > 0 then
-        status = "WARNING"
-    end
-
-    if damage >= 25 then
-        status = "CRITICAL"
-    end
-
-    -- =====================
-    -- RELAY CONTROL
-    -- =====================
-
-    if active then
-
-        -- Reactor ON
-
-        relayOff.setOutput("front", false)
-        relayOn.setOutput("front", true)
-
-    else
-
-        -- Reactor OFF
-
-        relayOff.setOutput("front", true)
-        relayOn.setOutput("front", false)
+        sleep(1)
 
     end
+end
 
-    -- =====================
-    -- MONITOR
-    -- =====================
+-- =====================================
+-- START ALL PROGRAMS
+-- =====================================
 
-    monitor.clear()
+local tasks = {}
 
-    monitor.setCursorPos(1,1)
-    monitor.write("=== REACTOR ===")
+for _, program in ipairs(programs) do
 
-    monitor.setCursorPos(1,3)
-    monitor.write("STATUS: "..status)
-
-    monitor.setCursorPos(1,5)
-    monitor.write("TEMP: "..temp.." C")
-
-    monitor.setCursorPos(1,7)
-    monitor.write("COOLANT: "..coolant.."%")
-
-    monitor.setCursorPos(1,9)
-    monitor.write("DAMAGE: "..damage.."%")
-
-    monitor.setCursorPos(1,11)
-    monitor.write("BURN: "..burn)
-
-    sleep(1)
+    table.insert(tasks, function()
+        supervise(program)
+    end)
 
 end
+
+parallel.waitForAll(table.unpack(tasks))
