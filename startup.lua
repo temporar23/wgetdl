@@ -1,3 +1,4 @@
+
 -- =====================================
 -- SKALA REACTOR MONITOR
 -- =====================================
@@ -29,6 +30,21 @@ end
 
 monitor.setTextScale(1)
 
+-- =====================
+-- RELAYS
+-- =====================
+
+local relayOff = peripheral.wrap("redstone_relay_0")
+local relayOn  = peripheral.wrap("redstone_relay_1")
+
+if not relayOff then
+    error("RELAY 0 NOT FOUND")
+end
+
+if not relayOn then
+    error("RELAY 1 NOT FOUND")
+end
+
 print("SYSTEM ONLINE")
 
 sleep(1)
@@ -55,7 +71,13 @@ while true do
 
     local burn = reactor.getBurnRate()
 
-    local status = "ONLINE"
+    local active = reactor.getStatus()
+
+    local status = "OFFLINE"
+
+    if active then
+        status = "ONLINE"
+    end
 
     if damage > 0 then
         status = "WARNING"
@@ -65,7 +87,29 @@ while true do
         status = "CRITICAL"
     end
 
-    -- ===== MONITOR =====
+    -- =====================
+    -- RELAY CONTROL
+    -- =====================
+
+    if active then
+
+        -- Reactor ON
+
+        relayOff.setOutput("front", false)
+        relayOn.setOutput("front", true)
+
+    else
+
+        -- Reactor OFF
+
+        relayOff.setOutput("front", true)
+        relayOn.setOutput("front", false)
+
+    end
+
+    -- =====================
+    -- MONITOR
+    -- =====================
 
     monitor.clear()
 
