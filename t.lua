@@ -54,7 +54,7 @@ while true do
     -- Aktivitätsdauer
     sleep(math.random(1, 4))
 
-    -- Wieder ausschalten
+    -- Wieder ausschalten1
     for _, relay in ipairs(active) do
 
         relay.setOutput(side, false)
